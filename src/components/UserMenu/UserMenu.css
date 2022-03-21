@@ -20,18 +20,20 @@
 .user-menu__button:last-of-type {
     margin-left: 30px;
     width: 100px;
-    padding: 8px 0;
     border: 2px solid #aaaaaa;
     box-sizing: border-box;
     border-radius: 50px;
 }
 
 .user-menu__link {
+    display: flex;
+    align-items: center;
     text-decoration: none;
     color: white;
     font-size: 14px;
     line-height: 18px;
     font-weight: 500;
+    height: 28px;
 }
 
 .user-menu__account-icon {

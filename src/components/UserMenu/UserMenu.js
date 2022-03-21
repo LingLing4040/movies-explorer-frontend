@@ -16,8 +16,12 @@ function UserMenu() {
                 </Link>
             </li>
             <li className='user-menu__button'>
-                <img className='user-menu__account-icon' src={iconPath} alt='Иконка профиля'></img>
                 <Link className='user-menu__link' to='/profile'>
+                    <img
+                        className='user-menu__account-icon'
+                        src={iconPath}
+                        alt='Иконка профиля'
+                    ></img>
                     Аккаунт
                 </Link>
             </li>

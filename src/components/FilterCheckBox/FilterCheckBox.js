@@ -1,4 +1,6 @@
-function FilterCheckBox() {
+import React from 'react';
+
+function FilterCheckBox({ isShort, updateIsShort }) {
     return (
         <div className='filter-checkbox'>
             <label htmlFor='short' className='filter-checkbox__label'>
@@ -7,7 +9,8 @@ function FilterCheckBox() {
                     id='short'
                     type='checkbox'
                     className='filter-checkbox__input'
-                    defaultChecked
+                    onChange={() => updateIsShort(!isShort)}
+                    checked={isShort}
                 />
                 <span className='filter-checkbox__span'></span>
             </label>

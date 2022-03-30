@@ -1,28 +1,58 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
+import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 
-function MoviesCard(props) {
+const baseUrl = 'https://api.nomoreparties.co';
+
+function MoviesCard({ movie, handleSaveMovie, handleDeleteMovie }) {
+    const currentUser = React.useContext(CurrentUserContext);
+    const location = useLocation().pathname;
+
+    // const [isSaved, setIsSaved] = React.useState('false');
+    // debugger;
     const moviesCardLikeButtonClassName = `${
-        props.isSaved
+        location === '/saved-movies'
             ? 'movies-card__delete-button'
-            : `movies-card__like ${props.isLiked ? 'movies-card__like_active' : ''}`
+            : `movies-card__like ${
+                  movie.saved && currentUser._id === movie.owner ? 'movies-card__like_active' : ''
+              }`
     }`;
+
+    const moviesCardImagePath = `${
+        location === '/movies' ? baseUrl + movie.image.url : movie.image
+    }`;
+    // const moviesCardLikeButtonClassName = `movies-card__like ${
+    //     isSaved ? 'movies-card__like_active' : ''
+    // }`;
+
+    function handleClick() {
+        location === '/movies'
+            ? movie.saved && currentUser._id === movie.owner
+                ? handleDeleteMovie(movie)
+                : handleSaveMovie(movie)
+            : handleDeleteMovie(movie);
+
+        // isSaved && handleDeleteMovie(movie);
+        // !isSaved && handleSaveMovie(movie);
+        // setIsSaved(!movie.saved);
+    }
 
     return (
         <li className='movies-card'>
             <img
                 className='movies-card__image'
-                src={props.movie.imagePath}
+                src={moviesCardImagePath}
                 alt='Карточка фильма'
             ></img>
             <div className='movies-card__info'>
-                <p className='movies-card__name'>{props.movie.name}</p>
+                <p className='movies-card__name'>{movie.nameRU}</p>
                 <button
                     type='button'
                     className={moviesCardLikeButtonClassName}
-                    // onClick={handleLikeClick}
+                    onClick={handleClick}
                 ></button>
             </div>
-            <p className='movies-card__duration'>{props.movie.duration}</p>
+            <p className='movies-card__duration'>{movie.duration}</p>
         </li>
     );
 }

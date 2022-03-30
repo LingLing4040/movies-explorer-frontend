@@ -14,7 +14,8 @@ function Navigation(props) {
     return (
         <nav className='nav'>
             {props.isLoggedIn && props.windowWidth >= 1280 && <UserMenu />}
-            {!props.isLoggedIn && <AuthMenu />}
+            {!props.isLoggedIn && props.windowWidth >= 1280 && <AuthMenu />}
+            {!props.isLoggedIn && props.windowWidth < 1280 && <AuthMenu />}
             {props.isLoggedIn && props.windowWidth < 1280 && (
                 <button className='nav__burger-button' type='button' onClick={handleMenuClick}>
                     <img src={iconPath} alt='Иконка бургер меню'></img>

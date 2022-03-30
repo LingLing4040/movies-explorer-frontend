@@ -1,10 +1,12 @@
 import { useLocation } from 'react-router-dom';
+import useValidation from '../../hooks/useValidation';
 
 function Form(props) {
+    const { values, errors, isValid, handleChange, resetForm } = useValidation();
     const location = useLocation().pathname;
 
     return (
-        <form className='form' id={'register'}>
+        <form className='form' id={props.formId} onSubmit={props.onSubmit}>
             {location === '/signup' && (
                 <label className='form__label' htmlFor='username'>
                     Имя
@@ -13,14 +15,15 @@ function Form(props) {
             {location === '/signup' && (
                 <input
                     className='form__input'
-                    id='username'
+                    id='name'
                     type='text'
-                    name='username'
+                    name='name'
                     placeholder='Имя профиля'
                     required
                     minLength='2'
                     maxLength='40'
-                    value={props.User.name || ''}
+                    value={props.userData.name}
+                    onChange={props.handleChange}
                 ></input>
             )}
             {/* <span className='form__input-error'>Что-то пошло не так...</span> */}
@@ -36,7 +39,8 @@ function Form(props) {
                 required
                 minLength='2'
                 maxLength='40'
-                value={props.User.email || ''}
+                value={props.userData.email}
+                onChange={props.handleChange}
             ></input>
             {/* <span className='form__input-error'>Что-то пошло не так...</span> */}
             <label className='form__label' htmlFor='password'>
@@ -51,15 +55,11 @@ function Form(props) {
                 required
                 minLength='2'
                 maxLength='40'
-                value={props.User.password || ''}
+                value={props.userData.password}
+                onChange={props.handleChange}
             ></input>
-            <span
-                className={`form__input-error ${
-                    props.formId === 'register' ? '' : 'form__input-error_hidden'
-                }`}
-            >
-                Что-то пошло не так...
-            </span>
+            <span className={`form__input-error`}>Что-то пошло не так...</span>
+            <span className='form__input-error profile-name-input-error'></span>
             <button
                 type='submit'
                 className={`form__submit-button ${

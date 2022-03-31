@@ -29,7 +29,7 @@
     padding: 0 0 10px 0;
 }
 
-.form__input_red {
+.form__input:invalid {
     color: #ee3465;
 }
 
@@ -63,6 +63,10 @@
     transition: opacity 0.3s;
 }
 
+.form__submit-button_inactive {
+    background-color: gray;
+}
+
 .form__submit-button_login {
     margin: 221px auto 0;
 }
@@ -70,6 +74,10 @@
 .form__submit-button:hover {
     cursor: pointer;
     opacity: 0.5;
+}
+.form__submit-button_inactive:hover {
+    cursor: auto;
+    opacity: 1;
 }
 
 .form__link-container {

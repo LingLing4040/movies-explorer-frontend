@@ -14,6 +14,7 @@ function Movies({
     isShort,
     keyword,
     updateKeyword,
+    isLoading,
 }) {
     // const lastSearch = JSON.parse(localStorage.getItem('lastSearch'));
     // console.log(lastSearch);
@@ -38,14 +39,19 @@ function Movies({
                 keyword={keyword}
                 updateKeyword={updateKeyword}
             />
-            <Preloader />
-            <MoviesCardList
-                moviesArray={moviesArray}
-                handleSaveMovie={handleSaveMovie}
-                handleDeleteMovie={handleDeleteMovie}
-                windowWidth={windowWidth}
-                moviesMessage={moviesMessage}
-            />
+            {isLoading ? (
+                <Preloader />
+            ) : moviesArray.length > 0 ? (
+                <MoviesCardList
+                    moviesArray={moviesArray}
+                    handleSaveMovie={handleSaveMovie}
+                    handleDeleteMovie={handleDeleteMovie}
+                    windowWidth={windowWidth}
+                    moviesMessage={moviesMessage}
+                />
+            ) : (
+                <p className='movies__not-found'>Ничего не найдено</p>
+            )}
         </main>
     );
 }

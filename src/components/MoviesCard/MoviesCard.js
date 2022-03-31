@@ -8,8 +8,8 @@ function MoviesCard({ movie, handleSaveMovie, handleDeleteMovie }) {
     const currentUser = React.useContext(CurrentUserContext);
     const location = useLocation().pathname;
 
-    // const [isSaved, setIsSaved] = React.useState('false');
-    // debugger;
+    const durationHours = `${Math.floor(movie.duration / 60)}ч ${movie.duration % 60}м`;
+
     const moviesCardLikeButtonClassName = `${
         location === '/saved-movies'
             ? 'movies-card__delete-button'
@@ -39,11 +39,13 @@ function MoviesCard({ movie, handleSaveMovie, handleDeleteMovie }) {
 
     return (
         <li className='movies-card'>
-            <img
-                className='movies-card__image'
-                src={moviesCardImagePath}
-                alt='Карточка фильма'
-            ></img>
+            <a className='' href={movie.trailerLink} target='_blank' rel='noreferrer'>
+                <img
+                    className='movies-card__image'
+                    src={moviesCardImagePath}
+                    alt='Карточка фильма'
+                ></img>
+            </a>
             <div className='movies-card__info'>
                 <p className='movies-card__name'>{movie.nameRU}</p>
                 <button
@@ -52,7 +54,7 @@ function MoviesCard({ movie, handleSaveMovie, handleDeleteMovie }) {
                     onClick={handleClick}
                 ></button>
             </div>
-            <p className='movies-card__duration'>{movie.duration}</p>
+            <p className='movies-card__duration'>{durationHours}</p>
         </li>
     );
 }

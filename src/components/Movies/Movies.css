@@ -3,6 +3,14 @@
     max-width: 89.06%;
 }
 
+.movies__not-found {
+    margin-top: 50px;
+    font-size: 16px;
+    line-height: 19px;
+    font-weight: 400;
+    text-align: center;
+}
+
 .movies__more {
     text-align: center;
     width: 100%;

@@ -16,6 +16,7 @@ function SavedMovies({
     isShort,
     keyword,
     updateKeyword,
+    isLoading,
 }) {
     const currentUser = React.useContext(CurrentUserContext);
     // React.useEffect(() => {
@@ -47,14 +48,19 @@ function SavedMovies({
                 keyword={keyword}
                 updateKeyword={updateKeyword}
             />
-            <Preloader />
-            <MoviesCardList
-                moviesArray={movies}
-                handleSaveMovie={handleSaveMovie}
-                handleDeleteMovie={handleDeleteMovie}
-                windowWidth={windowWidth}
-                moviesMessage={moviesMessage}
-            />
+            {isLoading ? (
+                <Preloader />
+            ) : movies.length > 0 ? (
+                <MoviesCardList
+                    moviesArray={movies}
+                    handleSaveMovie={handleSaveMovie}
+                    handleDeleteMovie={handleDeleteMovie}
+                    windowWidth={windowWidth}
+                    moviesMessage={moviesMessage}
+                />
+            ) : (
+                <p className='movies__not-found'>Ничего не найдено</p>
+            )}
         </main>
     );
 }

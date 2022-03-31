@@ -16,6 +16,7 @@ import * as Auth from '../../utils/Auth';
 import NotFoundPage from '../NotFoundPage/NotFoundPage';
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
 import { useLocation } from 'react-router-dom';
+import InfoTooltip from '../InfoTooltip/InfoTooltip';
 
 function App() {
     const history = useHistory();
@@ -34,6 +35,15 @@ function App() {
     const [keyword, setKeyword] = React.useState('');
     const [isShort, setIsShort] = React.useState(false);
     // const [lastSearch, setLastSearch] = React.useState([]);
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [isInfoTooltipOpen, setIsInfoTooltipOpen] = React.useState(false);
+    const [isSuccess, setIsSuccess] = React.useState(false);
+    const [infoMessage, setInfoMessage] = React.useState('');
+    const isLogged = localStorage.getItem('isLogged') === 'true';
+
+    React.useEffect(() => {
+        console.log('123');
+    });
 
     React.useEffect(() => {
         checkToken();
@@ -43,20 +53,12 @@ function App() {
                     setCurrentUser(user);
                     localStorage.setItem('name', user.name);
                     localStorage.setItem('email', user.email);
-
-                    // if (localStorage.getItem('allMovies') === null) {
-                    //     localStorage.setItem('allMovies', JSON.stringify(moviesList));
-                    //     setAllMovies(moviesList);
-                    // } else {
-                    //     setAllMovies(JSON.parse(localStorage.getItem('allMovies')));
-                    // }
                 })
                 .catch((err) => {
-                    // setInfoMessage(errors(err));
-                    //   setIsInfoTooltipPopupOpen(true);
-                    console.log(err);
+                    setInfoMessage(err.message);
+                    setIsInfoTooltipOpen(false);
+                    setIsSuccess(false);
                 });
-            // .finally(() => setIsLoading(false));
         }
     }, [isLoggedIn]);
 
@@ -74,19 +76,23 @@ function App() {
     }
 
     function checkToken() {
+        // debugger;
         if (localStorage.getItem('token')) {
             const token = localStorage.getItem('token');
             if (token) {
                 setToken(token);
-                Auth.getContent(token)
+                Auth.getContent()
                     .then((res) => {
-                        if (res) {
-                            setIsLoggedIn(true);
-                            history.push('/movies');
-                        }
+                        setCurrentUser(res);
+                        setIsLoggedIn(true);
+                        history.push('/movies');
+                        localStorage.setItem('isLogged', true);
                     })
-                    .catch((err) => console.log(err));
-                // .catch((err) => setInfoMessage(errors(err)));
+                    .catch((err) => {
+                        setInfoMessage(err.message);
+                        handleInfoOpen(false);
+                        setIsSuccess(false);
+                    });
             }
         }
     }
@@ -95,11 +101,15 @@ function App() {
         mainApi
             .editInfo({ name, email })
             .then((res) => {
-                console.log(res);
                 setCurrentUser(res);
+                setInfoMessage('Профиль обновлён');
+                handleInfoOpen(true);
+                setIsSuccess(true);
             })
             .catch((err) => {
-                console.log(err);
+                setInfoMessage(err.message);
+                handleInfoOpen(false);
+                setIsSuccess(false);
             });
     }
 
@@ -109,63 +119,95 @@ function App() {
         history.push('/signin');
     }
 
-    function handleSaveMovie(movie) {
-        mainApi.saveMovie(movie).then(() => {
-            getSavedMovies();
-            const newSavedMovie = allMovies.find((item) => item.id === movie.id);
-            newSavedMovie.saved = true;
-            newSavedMovie.owner === currentUser._id
-                ? console.log(newSavedMovie.owner)
-                : // ? console.log(newSavedMovie.owner.includes(currentUser._id))
-                  // : newSavedMovie.owner.push(currentUser._id)
-                  (newSavedMovie.owner = currentUser._id);
+    function handlePopupClick(event) {
+        if (event.target.classList.contains('info-tooltip')) {
+            closeAllPopups();
+        }
+    }
 
-            console.log(newSavedMovie);
-            setAllMovies(
-                allMovies.map((item) => (item.id === newSavedMovie.id ? newSavedMovie : item))
-            );
-            localStorage.setItem('allMovies', JSON.stringify(allMovies));
-        });
-        // .catch((err) => {
-        //     setInfoMessage(errors(err));
-        //     setMoviesMessage('У вас пока нет сохраненных фильмов');
-        // });
+    function handleInfoOpen(res) {
+        setIsSuccess(res);
+        setIsInfoTooltipOpen(true);
+    }
+
+    function closeAllPopups() {
+        setIsInfoTooltipOpen(false);
+    }
+
+    function handleSaveMovie(movie) {
+        mainApi
+            .saveMovie(movie)
+            .then(() => {
+                setIsLoading(true);
+                getSavedMovies();
+                const newSavedMovie = allMovies.find((item) => item.id === movie.id);
+                newSavedMovie.saved = true;
+                newSavedMovie.owner === currentUser._id
+                    ? console.log(newSavedMovie.owner)
+                    : // ? console.log(newSavedMovie.owner.includes(currentUser._id))
+                      // : newSavedMovie.owner.push(currentUser._id)
+                      (newSavedMovie.owner = currentUser._id);
+
+                console.log(newSavedMovie);
+                setAllMovies(
+                    allMovies.map((item) => (item.id === newSavedMovie.id ? newSavedMovie : item))
+                );
+                localStorage.setItem('allMovies', JSON.stringify(allMovies));
+            })
+            .catch((err) => {
+                // setInfoMessage(errors(err));
+                // setMoviesMessage('У вас пока нет сохраненных фильмов');
+            })
+            .finally(() => setIsLoading(false));
     }
     function handleDeleteMovie(movie) {
         const deletedMovie = initialSavedMovies.find((item) => item.movieId === movie.id);
         // console.log(initialSavedMovies);
-        mainApi.deleteMovie(deletedMovie._id).then(() => {
-            getSavedMovies();
-            const deletedFilm = allMovies.find((item) => item === movie);
-            delete deletedFilm.saved;
-            // console.log(deletedFilm);
-            setAllMovies(
-                allMovies.map((item) => (item.id === deletedFilm.id ? deletedFilm : item))
-            );
-            localStorage.setItem('allMovies', JSON.stringify(allMovies));
-        });
-        // .catch((err) => setInfoMessage(errors(err)));
+        mainApi
+            .deleteMovie(deletedMovie._id)
+            .then(() => {
+                setIsLoading(true);
+                getSavedMovies();
+                const deletedFilm = allMovies.find((item) => item === movie);
+                delete deletedFilm.saved;
+                // console.log(deletedFilm);
+                setAllMovies(
+                    allMovies.map((item) => (item.id === deletedFilm.id ? deletedFilm : item))
+                );
+                localStorage.setItem('allMovies', JSON.stringify(allMovies));
+            })
+            .catch((err) => {
+                // setInfoMessage(errors(err)))
+            })
+            .finally(() => setIsLoading(false));
     }
 
     function handleDeleteSavedMovie(movie) {
-        mainApi.deleteMovie(movie._id).then(() => {
-            getSavedMovies();
-            const newMovies = savedMovies.filter((item) => item !== movie);
-            const deletedMovie = allMovies.find((item) => item.id === movie.movieId);
-            delete deletedMovie.saved;
-            setSavedMovies(newMovies);
-            setAllMovies(
-                allMovies.map((item) => (item.id === deletedMovie.id ? deletedMovie : item))
-            );
-            localStorage.setItem('allMovies', JSON.stringify(allMovies));
-        });
-        //   .catch(err => setInfoMessage(errors(err)))
+        mainApi
+            .deleteMovie(movie._id)
+            .then(() => {
+                setIsLoading(true);
+                getSavedMovies();
+                const newMovies = savedMovies.filter((item) => item !== movie);
+                const deletedMovie = allMovies.find((item) => item.id === movie.movieId);
+                delete deletedMovie.saved;
+                setSavedMovies(newMovies);
+                setAllMovies(
+                    allMovies.map((item) => (item.id === deletedMovie.id ? deletedMovie : item))
+                );
+                localStorage.setItem('allMovies', JSON.stringify(allMovies));
+            })
+            .catch((err) => {
+                // setInfoMessage(errors(err)))
+            })
+            .finally(() => setIsLoading(false));
     }
 
     function getSavedMovies() {
         mainApi
             .getSavedMovies()
             .then((movies) => {
+                setIsLoading(true);
                 setInitialSavedMovies(movies.filter((movie) => currentUser._id === movie.owner));
                 movies
                     .filter((movie) => currentUser._id === movie.owner)
@@ -183,7 +225,8 @@ function App() {
             })
             .catch(() => {
                 setInitialSavedMovies([]);
-            });
+            })
+            .finally(() => setIsLoading(false));
     }
     // React.useEffect(() => {
     //     const lastMovieSearch = JSON.parse(localStorage.getItem('lastSearch'));
@@ -217,6 +260,7 @@ function App() {
     };
 
     React.useEffect(() => {
+        // getSavedMovies();
         const allMovies = JSON.parse(localStorage.getItem('allMovies') || '[]');
 
         updateAllMovies(allMovies);
@@ -225,16 +269,29 @@ function App() {
         updateIsShort(JSON.parse(localStorage.getItem('isShort') || 'false'));
 
         if (!allMovies.length) {
-            moviesApi.getMovies().then((movies) => {
-                updateAllMovies(movies);
-                updateRenderedMovies(movies);
-            });
+            moviesApi
+                .getMovies()
+                .then((movies) => {
+                    setIsLoading(true);
+                    updateAllMovies(movies);
+                    updateRenderedMovies(movies);
+                })
+                .catch((err) => {
+                    // setInfoMessage(errors(err));
+                    //   setIsInfoTooltipPopupOpen(true);
+                    console.log(err);
+                })
+                .finally(() => setIsLoading(false));
         }
+
+        // mainApi.getSavedMovies().then((movies) => {
+        //     setSavedMovies(movies.filter((movie) => currentUser._id === movie.owner));
+        //     console.log(movies.filter((movie) => currentUser._id === movie.owner));
+        // });
     }, []);
 
     function handleSearch() {
         getSavedMovies();
-        console.log(savedMovies);
         let sortedMovies;
         // const keyword = localStorage.getItem('keyword') || '';
         // const Short = localStorage.getItem('isShort') === 'true' ? true : false;
@@ -244,7 +301,8 @@ function App() {
         if (keyword.length > 0) {
             // debugger;
             sortedMovies = filteredMovies.filter(
-                (movie) => JSON.stringify(movie).toLowerCase().includes(keyword.toLowerCase())
+                (movie) =>
+                    JSON.stringify(movie.nameRU).toLowerCase().includes(keyword.toLowerCase())
                 // movies.length === 0 && setMoviesMessage('Ничего не найдено')
             );
 
@@ -274,6 +332,22 @@ function App() {
         };
     });
 
+    React.useEffect(() => {
+        if (isInfoTooltipOpen === true) {
+            function handleEsc(event) {
+                if (event.key === 'Escape') {
+                    closeAllPopups();
+                }
+            }
+
+            document.addEventListener('keydown', handleEsc);
+
+            return () => {
+                document.removeEventListener('keydown', handleEsc);
+            };
+        }
+    }, [isInfoTooltipOpen]);
+
     return (
         <CurrentUserContext.Provider value={currentUser}>
             <div className='page'>
@@ -284,7 +358,12 @@ function App() {
                             <Main />
                             <Footer />
                         </Route>
-                        <ProtectedRoute exact path='/movies' isLoggedIn={isLoggedIn}>
+                        <ProtectedRoute
+                            exact
+                            path='/movies'
+                            isLoggedIn={isLoggedIn}
+                            isLogged={isLogged}
+                        >
                             <Header isLoggedIn={isLoggedIn} windowWidth={windowWidth} />
                             <Movies
                                 movies={renderedMovies}
@@ -297,33 +376,17 @@ function App() {
                                 updateIsShort={updateIsShort}
                                 keyword={keyword}
                                 updateKeyword={updateKeyword}
+                                isLoading={isLoading}
                             />
                             <Footer />
                         </ProtectedRoute>
-                        {/* <ProtectedRoute
-                            exact
-                            path='/movies'
-                            isLoggedIn={isLoggedIn}
-                            // windowWidth={windowWidth}
-                            renderedMovies={renderedMovies}
-                            // moviesMessage={moviesMessage}
-                            component={() => {
-                                return (
-                                <>
-                                    
-                                    <Movies
-                                        movies={renderedMovies}
-                                        handleSearch={handleSearch}
-                                        // handleSaveMovie={handleSaveMovie}
-                                        // handleDeleteMovie={handleDeleteMovie}
-                                        windowWidth={windowWidth}
-                                    />
-                                    
-                                </>)
-                            }}
-                        /> */}
 
-                        <ProtectedRoute exact path='/saved-movies' isLoggedIn={isLoggedIn}>
+                        <ProtectedRoute
+                            exact
+                            path='/saved-movies'
+                            isLoggedIn={isLoggedIn}
+                            isLogged={isLogged}
+                        >
                             <Header isLoggedIn={isLoggedIn} windowWidth={windowWidth} />
                             <SavedMovies
                                 movies={savedMovies}
@@ -335,20 +398,36 @@ function App() {
                                 updateIsShort={updateIsShort}
                                 keyword={keyword}
                                 updateKeyword={updateKeyword}
+                                isLoading={isLoading}
                             />
                             <Footer />
                         </ProtectedRoute>
 
-                        <ProtectedRoute exact path='/profile' isLoggedIn={isLoggedIn}>
+                        <ProtectedRoute
+                            exact
+                            path='/profile'
+                            isLoggedIn={isLoggedIn}
+                            isLogged={isLogged}
+                        >
                             <Header isLoggedIn={isLoggedIn} windowWidth={windowWidth} />
                             <Profile handleLogout={handleLogout} onUpdateUser={handleUpdateUser} />
                         </ProtectedRoute>
 
                         <Route path='/signup'>
-                            <Register handleLogin={checkToken} />
+                            <Register
+                                handleLogin={checkToken}
+                                handleInfoOpen={handleInfoOpen}
+                                setInfoMessage={setInfoMessage}
+                                setIsSuccess={setIsSuccess}
+                            />
                         </Route>
                         <Route path='/signin'>
-                            <Login handleLogin={checkToken} />
+                            <Login
+                                handleLogin={checkToken}
+                                handleInfoOpen={handleInfoOpen}
+                                setInfoMessage={setInfoMessage}
+                                setIsSuccess={setIsSuccess}
+                            />
                         </Route>
                         <Route path='/notfoundpage'>
                             <NotFoundPage />
@@ -357,6 +436,13 @@ function App() {
                             <Redirect to='/' />
                         </Route>
                     </Switch>
+                    <InfoTooltip
+                        onClose={closeAllPopups}
+                        isOpened={isInfoTooltipOpen}
+                        handlePopupClick={handlePopupClick}
+                        isSuccess={isSuccess}
+                        infoMessage={infoMessage}
+                    />
                 </div>
             </div>
         </CurrentUserContext.Provider>

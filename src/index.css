@@ -22,6 +22,8 @@
 @import url(../src/components/UserMenu/UserMenu.css);
 @import url(../src/components/MobileNav/MobileNav.css);
 @import url(../src/components/NotFoundPage/NotFoundPage.css);
+@import url(../src/components/Preloader/Preloader.css);
+@import url(../src/components/InfoTooltip/InfoTooltip.css);
 
 html,
 body,

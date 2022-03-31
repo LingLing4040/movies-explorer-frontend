@@ -1,44 +1,30 @@
 import React from 'react';
 import logoPath from '../../images/header-logo.svg';
 import Form from '../Form/Form';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import * as Auth from '../../utils/Auth.js';
+import useFormValidator from '../../hooks/UseFormValidator';
 
-function Login(props) {
-    const history = useHistory();
+function Login({ handleLogin, handleInfoOpen, setInfoMessage, setIsSuccess }) {
+    const { values, errors, isFormValid, handleChange } = useFormValidator(
+        { email: '', password: '' },
+        { email: false, password: false },
+        { email: '', password: '' },
+        false
+    );
 
-    const [userData, setUserData] = React.useState({
-        email: '',
-        password: '',
-    });
+    function handleSignin(values) {
+        const { password, email } = values;
 
-    function handleChange(e) {
-        const { name, value } = e.target;
-        setUserData({
-            ...userData,
-            [name]: value,
-        });
-    }
-
-    function handleSubmit(e) {
-        e.preventDefault();
-        if (!userData.email || !userData.password) {
-            return;
-        }
-        const { password, email } = userData;
         Auth.login(password, email)
-            .then((res) => {
-                if (res) {
-                    setUserData({ email: '', password: '' });
-                    props.handleLogin();
-                } else {
-                    setUserData({
-                        ...userData,
-                        message: 'Что-то пошло не так!',
-                    });
-                }
+            .then(() => {
+                handleLogin();
             })
-            .catch((err) => console.log(err));
+            .catch((err) => {
+                setInfoMessage(err.message);
+                handleInfoOpen(false);
+                setIsSuccess(false);
+            });
     }
     return (
         <main className='login'>
@@ -48,9 +34,11 @@ function Login(props) {
             <h1 className='login__welcome'>Рады видеть!</h1>
             <Form
                 formId='login'
-                onSubmit={handleSubmit}
-                userData={userData}
+                onSubmit={handleSignin}
+                values={values}
+                errors={errors}
                 handleChange={handleChange}
+                isFormValid={isFormValid}
             />
             <div className='login__link-container'>
                 <p className='login__link-text'>Ещё не зарегистрированы?</p>

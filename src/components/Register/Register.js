@@ -1,46 +1,29 @@
 import React from 'react';
 import logoPath from '../../images/header-logo.svg';
 import Form from '../Form/Form';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import * as Auth from '../../utils/Auth.js';
+import useFormValidator from '../../hooks/UseFormValidator';
 
-function Register({ handleLogin }) {
-    const history = useHistory();
+function Register({ handleLogin, handleInfoOpen, setInfoMessage, setIsSuccess }) {
+    const { values, errors, isFormValid, handleChange } = useFormValidator(
+        { name: '', email: '', password: '' },
+        { name: false, email: false, password: false },
+        { name: '', email: '', password: '' },
+        false
+    );
 
-    const [userData, setUserData] = React.useState({
-        name: '',
-        email: '',
-        password: '',
-    });
-
-    function handleChange(e) {
-        const { name, value } = e.target;
-        setUserData({
-            ...userData,
-            [name]: value,
-        });
-    }
-
-    function handleSubmit(e) {
-        e.preventDefault();
-        const { name, password, email } = userData;
+    function handleRegister(values) {
+        const { name, password, email } = values;
 
         Auth.register(name, password, email)
-            .then((res) => {
-                if (res) {
-                    // props.handleInfoOpen(true);
-                    handleLogin();
-                    // setInfoMessage('Вы успешно зарегистрировались')
-                } else {
-                    setUserData({
-                        ...userData,
-                        message: 'Что-то пошло не так!',
-                    });
-                }
+            .then(() => {
+                handleLogin();
             })
             .catch((err) => {
-                // props.handleInfoOpen(false);
-                console.log(err);
+                setInfoMessage(err.message);
+                handleInfoOpen(false);
+                setIsSuccess(false);
             });
     }
 
@@ -52,9 +35,11 @@ function Register({ handleLogin }) {
             <h1 className='register__welcome'>Добро пожаловать!</h1>
             <Form
                 formId='register'
-                onSubmit={handleSubmit}
-                userData={userData}
+                onSubmit={handleRegister}
+                values={values}
+                errors={errors}
                 handleChange={handleChange}
+                isFormValid={isFormValid}
             />
             <div className='register__link-container'>
                 <p className='register__link-text'>Уже зарегистрированы?</p>

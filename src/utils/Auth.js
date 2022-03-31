@@ -5,7 +5,7 @@ const returnData = (res) => {
         return res.json();
     }
 
-    return Promise.reject(`Ошибка: ${res.status}`);
+    return res.json().then((message) => Promise.reject(message));
 };
 
 export const register = (name, password, email) => {
@@ -18,8 +18,11 @@ export const register = (name, password, email) => {
         credentials: 'include',
     })
         .then(returnData)
-        .then((res) => {
-            return res;
+        .then((data) => {
+            if (data) {
+                localStorage.setItem('token', data.token);
+                return data;
+            }
         });
 };
 

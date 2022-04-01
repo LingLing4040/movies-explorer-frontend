@@ -21,7 +21,7 @@ function App() {
     const history = useHistory();
 
     const [currentUser, setCurrentUser] = React.useState({});
-    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+    const [isLoggedIn, setIsLoggedIn] = React.useState(undefined);
 
     const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
 
@@ -38,16 +38,17 @@ function App() {
     const [isInfoTooltipOpen, setIsInfoTooltipOpen] = React.useState(false);
     const [isSuccess, setIsSuccess] = React.useState(false);
     const [infoMessage, setInfoMessage] = React.useState('');
-    const isLogged = localStorage.getItem('isLogged') === 'true';
 
     React.useEffect(() => {
         checkToken();
         if (isLoggedIn) {
-            Promise.all([mainApi.getInfo()])
-                .then(([user]) => {
+            Promise.all([mainApi.getInfo(), mainApi.getSavedMovies()])
+                .then(([user, movies]) => {
                     setCurrentUser(user);
                     localStorage.setItem('name', user.name);
                     localStorage.setItem('email', user.email);
+                    console.log(movies);
+                    updateSavedMovies(movies.filter((movie) => currentUser._id === movie.owner));
                 })
                 .catch((err) => {
                     setInfoMessage(err.message);
@@ -183,7 +184,6 @@ function App() {
         mainApi
             .getSavedMovies()
             .then((movies) => {
-                // setIsLoading(true);
                 setInitialSavedMovies(movies.filter((movie) => currentUser._id === movie.owner));
                 movies
                     .filter((movie) => currentUser._id === movie.owner)
@@ -202,7 +202,6 @@ function App() {
             .catch(() => {
                 setInitialSavedMovies([]);
             });
-        // .finally(() => setIsLoading(false));
     }
 
     const updateAllMovies = (movies) => {
@@ -210,10 +209,10 @@ function App() {
         localStorage.setItem('allMovies', JSON.stringify(movies));
     };
 
-    // const updateSavedMovies = (movies) => {
-    //     setSavedMovies(movies);
-    //     localStorage.setItem('savedMovies', JSON.stringify(movies));
-    // };
+    const updateSavedMovies = (movies) => {
+        setSavedMovies(movies);
+        localStorage.setItem('savedMovies', JSON.stringify(movies));
+    };
 
     const updateRenderedMovies = (movies) => {
         setRenderedMovies(movies);
@@ -231,6 +230,8 @@ function App() {
 
     React.useEffect(() => {
         const allMovies = JSON.parse(localStorage.getItem('allMovies') || '[]');
+
+        getSavedMovies();
 
         updateAllMovies(allMovies);
         updateRenderedMovies(renderedMovies.length ? renderedMovies : allMovies);
@@ -252,10 +253,6 @@ function App() {
                 })
                 .finally(() => setIsLoading(false));
         }
-
-        // mainApi.getSavedMovies().then((movies) => {
-        //     updateSavedMovies(movies);
-        // });
     }, []);
 
     function handleSearch() {
@@ -323,12 +320,7 @@ function App() {
                             <Main />
                             <Footer />
                         </Route>
-                        <ProtectedRoute
-                            exact
-                            path='/movies'
-                            isLoggedIn={isLoggedIn}
-                            isLogged={isLogged}
-                        >
+                        <ProtectedRoute exact path='/movies' isLoggedIn={isLoggedIn}>
                             <Header isLoggedIn={isLoggedIn} windowWidth={windowWidth} />
                             <Movies
                                 movies={renderedMovies}
@@ -346,12 +338,7 @@ function App() {
                             <Footer />
                         </ProtectedRoute>
 
-                        <ProtectedRoute
-                            exact
-                            path='/saved-movies'
-                            isLoggedIn={isLoggedIn}
-                            isLogged={isLogged}
-                        >
+                        <ProtectedRoute exact path='/saved-movies' isLoggedIn={isLoggedIn}>
                             <Header isLoggedIn={isLoggedIn} windowWidth={windowWidth} />
                             <SavedMovies
                                 movies={savedMovies}
@@ -369,12 +356,7 @@ function App() {
                             <Footer />
                         </ProtectedRoute>
 
-                        <ProtectedRoute
-                            exact
-                            path='/profile'
-                            isLoggedIn={isLoggedIn}
-                            isLogged={isLogged}
-                        >
+                        <ProtectedRoute exact path='/profile' isLoggedIn={isLoggedIn}>
                             <Header isLoggedIn={isLoggedIn} windowWidth={windowWidth} />
                             <Profile handleLogout={handleLogout} onUpdateUser={handleUpdateUser} />
                         </ProtectedRoute>

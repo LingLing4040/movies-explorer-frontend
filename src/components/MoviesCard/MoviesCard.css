@@ -1,0 +1,112 @@
+.movies-card {
+    background-color: #222222;
+    max-width: 364px;
+    border-radius: 6px;
+    margin: 0 auto;
+}
+
+.movies-card__info {
+    display: flex;
+    margin: 9px auto 0;
+    max-width: 91%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.movies-card__name {
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.movies-card__like {
+    transition: opacity 0.3s;
+    padding: 0;
+    border: 0;
+    background-color: #222222;
+    background-image: url(../../images/like.svg);
+    object-fit: contain;
+    width: 30px;
+    height: 30px;
+    align-self: center;
+}
+
+.movies-card__delete-button {
+    transition: opacity 0.3s;
+    padding: 0;
+    border: 0;
+    background-color: #222222;
+    background-image: url(../../images/delete-card.svg);
+    object-fit: contain;
+    width: 30px;
+    height: 30px;
+    align-self: center;
+}
+
+.movies-card__delete-button:hover {
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+.movies-card__like:hover {
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+.movies-card__like_active {
+    background-image: url(../../images/like-active.svg);
+    opacity: 1;
+}
+
+.movies-card__duration {
+    font-size: 11px;
+    line-height: 13px;
+    font-weight: 400;
+    color: #8b8b8b;
+    margin: 10px 0 0 16px;
+    padding-bottom: 16px;
+}
+
+.movies-card__image {
+    max-width: 100%;
+    object-fit: cover;
+}
+
+@media screen and (max-width: 1279px) {
+    .movies-card {
+        max-width: 339px;
+    }
+
+    .movies-card__info {
+        margin: 8px auto 0;
+    }
+
+    .movies-card__duration {
+        margin: 7px 0 0 14px;
+        padding-bottom: 14px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .movies-card {
+        max-width: 300px;
+    }
+
+    .movies-card__info {
+        margin: 7px auto 0;
+        max-width: 91.2%;
+    }
+
+    .movies-card__name {
+        font-size: 12px;
+        line-height: 15px;
+    }
+
+    .movies-card__duration {
+        font-size: 10px;
+        line-height: 12px;
+        margin: 14px 0 0 14px;
+        padding-bottom: 14px;
+    }
+}

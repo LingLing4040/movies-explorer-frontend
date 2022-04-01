@@ -116,7 +116,6 @@ function App() {
         mainApi
             .saveMovie(movie)
             .then(() => {
-                setIsLoading(true);
                 getSavedMovies();
                 const newSavedMovie = allMovies.find((item) => item.id === movie.id);
                 newSavedMovie.saved = true;
@@ -133,19 +132,19 @@ function App() {
                 setInfoMessage(err.message);
                 handleInfoOpen(false);
                 setIsSuccess(false);
-            })
-            .finally(() => setIsLoading(false));
+            });
     }
 
     function handleDeleteMovie(movie) {
+        console.log(movie);
         const deletedMovie = initialSavedMovies.find((item) => item.movieId === movie.id);
         mainApi
             .deleteMovie(deletedMovie._id)
             .then(() => {
-                setIsLoading(true);
                 getSavedMovies();
                 const deletedFilm = allMovies.find((item) => item === movie);
                 delete deletedFilm.saved;
+                delete deletedFilm.owner;
 
                 setAllMovies(
                     allMovies.map((item) => (item.id === deletedFilm.id ? deletedFilm : item))
@@ -156,15 +155,13 @@ function App() {
                 setInfoMessage(err.message);
                 handleInfoOpen(false);
                 setIsSuccess(false);
-            })
-            .finally(() => setIsLoading(false));
+            });
     }
 
     function handleDeleteSavedMovie(movie) {
         mainApi
             .deleteMovie(movie._id)
             .then(() => {
-                setIsLoading(true);
                 getSavedMovies();
                 const newMovies = savedMovies.filter((item) => item !== movie);
                 const deletedMovie = allMovies.find((item) => item.id === movie.movieId);
@@ -179,15 +176,14 @@ function App() {
                 setInfoMessage(err.message);
                 handleInfoOpen(false);
                 setIsSuccess(false);
-            })
-            .finally(() => setIsLoading(false));
+            });
     }
 
     function getSavedMovies() {
         mainApi
             .getSavedMovies()
             .then((movies) => {
-                setIsLoading(true);
+                // setIsLoading(true);
                 setInitialSavedMovies(movies.filter((movie) => currentUser._id === movie.owner));
                 movies
                     .filter((movie) => currentUser._id === movie.owner)
@@ -205,8 +201,8 @@ function App() {
             })
             .catch(() => {
                 setInitialSavedMovies([]);
-            })
-            .finally(() => setIsLoading(false));
+            });
+        // .finally(() => setIsLoading(false));
     }
 
     const updateAllMovies = (movies) => {
@@ -214,10 +210,10 @@ function App() {
         localStorage.setItem('allMovies', JSON.stringify(movies));
     };
 
-    const updateSavedMovies = (movies) => {
-        setSavedMovies(movies);
-        localStorage.setItem('savedMovies', JSON.stringify(movies));
-    };
+    // const updateSavedMovies = (movies) => {
+    //     setSavedMovies(movies);
+    //     localStorage.setItem('savedMovies', JSON.stringify(movies));
+    // };
 
     const updateRenderedMovies = (movies) => {
         setRenderedMovies(movies);
@@ -227,10 +223,8 @@ function App() {
         setKeyword(word);
         localStorage.setItem('keyword', word);
     };
-    const updateIsShort = (Short) => {
-        if (Short !== isShort) {
-            setIsShort(Short);
-        }
+    const updateIsShort = (isShort) => {
+        setIsShort(isShort);
 
         localStorage.setItem('isShort', JSON.stringify(isShort));
     };
@@ -259,9 +253,9 @@ function App() {
                 .finally(() => setIsLoading(false));
         }
 
-        mainApi.getSavedMovies().then((movies) => {
-            updateSavedMovies(movies);
-        });
+        // mainApi.getSavedMovies().then((movies) => {
+        //     updateSavedMovies(movies);
+        // });
     }, []);
 
     function handleSearch() {

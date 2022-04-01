@@ -26,8 +26,9 @@ function MoviesCard({ movie, handleSaveMovie, handleDeleteMovie }) {
     }`;
 
     function handleClick() {
+        console.log(movie);
         location === '/movies'
-            ? movie.saved && currentUser._id === movie.owner
+            ? movie.saved === true && currentUser._id === movie.owner
                 ? handleDeleteMovie(movie)
                 : handleSaveMovie(movie)
             : handleDeleteMovie(movie);

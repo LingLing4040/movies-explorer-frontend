@@ -7,7 +7,6 @@ class MoviesApi {
     getMovies() {
         return fetch(`${this.baseUrl}/beatfilm-movies`, {
             headers: this.headers,
-            // credentials: 'include',
         }).then(this._returnData);
     }
 
@@ -28,23 +27,3 @@ const moviesApi = new MoviesApi({
 });
 
 export default moviesApi;
-
-// import { MOVIES_URL, checkResponse } from './utils';
-
-// export function getMovies() {
-//     const checkResponse = (res) => {
-//         if (res.ok) {
-//             return res.json();
-//         }
-//         return Promise.reject(`Ошибка: ${res.status}`);
-//     };
-
-//     const res = fetch(`https://api.nomoreparties.co/beatfilm-movies`, {
-//         headers: {
-//             Accept: 'application/json',
-//             'Content-Type': 'application/json',
-//         },
-//     });
-
-//     return checkResponse(res);
-// }

@@ -63,7 +63,6 @@ class Api {
         if (res.ok) {
             return res.json();
         }
-        // return Promise.reject(`Ошибка: ${res.status}`);
         return res.json().then((message) => Promise.reject(message));
     }
 }
@@ -78,50 +77,3 @@ const mainApi = new Api({
 });
 
 export default mainApi;
-
-// const baseUrl = 'https://api.filatov-movies.nomoredomains.work';
-
-// export function getInfo() {
-//     const checkResponse = (res) => {
-//         if (res.ok) {
-//             return res.json();
-//         }
-//         return Promise.reject(`Ошибка: ${res.status}`);
-//     };
-
-//     const res = fetch(`${baseUrl}/users/me`, {
-//         headers: {
-//             // Accept: 'application/json',
-//             'Content-Type': 'application/json',
-//             // 'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-//         },
-//     });
-
-//     return checkResponse(res);
-// }
-
-// export function editInfo(newInfo) {
-//     const checkResponse = (res) => {
-//         console.log(res);
-//         console.log(res.ok);
-//         if (res.ok) {
-//             return res.json();
-//         }
-//         return Promise.reject(`Ошибка: ${res.status}`);
-//     };
-//     console.log(newInfo);
-//     console.log(JSON.stringify(newInfo));
-
-//     const res = fetch(`${baseUrl}/users/me`, {
-//         method: 'PATCH',
-//         headers: {
-//             // Accept: 'application/json',
-//             'Content-Type': 'application/json',
-//             // 'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-//         },
-//         body: JSON.stringify(newInfo),
-//         credentials: 'include',
-//     });
-
-//     return checkResponse(res);
-// }

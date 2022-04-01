@@ -15,25 +15,15 @@ function Movies({
     keyword,
     updateKeyword,
     isLoading,
+    handleSearchSaved,
+    handleFirstSearchSaved,
 }) {
-    // const lastSearch = JSON.parse(localStorage.getItem('lastSearch'));
-    // console.log(lastSearch);
-    // console.log(movies);
-    // React.useEffect(() => {
-    //     setLastSearch(JSON.parse(localStorage.getItem('lastSearch')));
-    //     console.log(lastSearch);
-    //     // setRenderedMovies(lastSearch);
-
-    //     // handleSearch(lastSearch);
-    // }, []);
-
-    const moviesArray = movies;
-    // lastSearch !== null ? lastSearch :
-
     return (
         <main className='movies'>
             <SearchForm
                 handleSearch={handleSearch}
+                handleSearchSaved={handleSearchSaved}
+                handleFirstSearchSaved={handleFirstSearchSaved}
                 updateIsShort={updateIsShort}
                 isShort={isShort}
                 keyword={keyword}
@@ -41,9 +31,9 @@ function Movies({
             />
             {isLoading ? (
                 <Preloader />
-            ) : moviesArray.length > 0 ? (
+            ) : movies.length > 0 ? (
                 <MoviesCardList
-                    moviesArray={moviesArray}
+                    moviesArray={movies}
                     handleSaveMovie={handleSaveMovie}
                     handleDeleteMovie={handleDeleteMovie}
                     windowWidth={windowWidth}

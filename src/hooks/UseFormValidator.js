@@ -10,7 +10,7 @@ function UseFormValidator(initialValues, initialIsinputValid, initialIsFormValid
     const location = useLocation().pathname;
 
     const nameRegExp = /^[А-яёA-z\s\-]{2,30}$/;
-    const passwordRegExp = /^.{2,30}$/;
+    const passwordRegExp = /^.{8,30}$/;
 
     function validateName(name) {
         return nameRegExp.test(name);
@@ -38,7 +38,7 @@ function UseFormValidator(initialValues, initialIsinputValid, initialIsFormValid
                   },
                   password: {
                       validate: validatePassword,
-                      message: 'Пароль должен быть длиной от 2 до 30 символов',
+                      message: 'Пароль должен быть длиной от 8 до 30 символов',
                   },
               }
             : location === '/signin'
@@ -49,7 +49,7 @@ function UseFormValidator(initialValues, initialIsinputValid, initialIsFormValid
                   },
                   password: {
                       validate: validatePassword,
-                      message: 'Пароль должен быть длиной от 2 до 30 символов',
+                      message: 'Пароль должен быть длиной от 8 до 30 символов',
                   },
               }
             : {

@@ -1,14 +1,18 @@
 import React from 'react';
 import FilterCheckBox from '../FilterCheckBox/FilterCheckBox';
+import { useLocation } from 'react-router-dom';
 
-function SearchForm({ handleSearch, updateIsShort, isShort, keyword, updateKeyword }) {
-    // const [keyword, setKeyword] = React.useState('');
+function SearchForm({
+    handleSearch,
+    handleSearchSaved,
+    updateIsShort,
+    isShort,
+    keyword,
+    updateKeyword,
+}) {
+    const location = useLocation().pathname;
+
     const [isFormActive, setIsFormActive] = React.useState(false);
-    // const [isShort, setIsShort] = React.useState(false);
-
-    // function handleCheckShort(e) {
-    //     setIsShort(e.target.checked);
-    // }
 
     function handleInputClick() {
         setIsFormActive(true);
@@ -19,26 +23,17 @@ function SearchForm({ handleSearch, updateIsShort, isShort, keyword, updateKeywo
     }
 
     function handleKeyword(e) {
-        // setKeyword(e.target.value.toString());
         updateKeyword(e.target.value);
     }
 
     function handleSubmit(e) {
         e.preventDefault();
         localStorage.setItem('keyword', keyword);
-        handleSearch();
+        location === '/movies' ? handleSearch() : handleSearchSaved();
     }
 
-    // React.useEffect(() => {
-    //     setIsShort(localStorage.getItem('isShort') === 'true' ? true : false);
-    //     setKeyword(localStorage.getItem('keyword'));
-    //     // handleSearch();
-    // }, []);
-
     React.useEffect(() => {
-        // debugger;
-        // localStorage.setItem('isShort', isShort);
-        handleSearch();
+        location === '/movies' ? handleSearch() : handleSearchSaved();
     }, [isShort]);
 
     return (
@@ -66,11 +61,7 @@ function SearchForm({ handleSearch, updateIsShort, isShort, keyword, updateKeywo
                     Поиск
                 </button>
             </form>
-            <FilterCheckBox
-                // onChange={handleCheckShort}
-                isShort={isShort}
-                updateIsShort={updateIsShort}
-            />
+            <FilterCheckBox isShort={isShort} updateIsShort={updateIsShort} />
         </div>
     );
 }

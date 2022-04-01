@@ -1,14 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import useFormValidator from '../../hooks/UseFormValidator';
 
 function Form({ onSubmit, formId, values, handleChange, errors, isFormValid }) {
-    // const { values, errors, isFormValid, handleChange } = useFormValidator(
-    //     { name: '', email: '', password: '' },
-    //     { name: false, email: false, password: false },
-    //     { name: '', email: '', password: '' },
-    //     false
-    // );
     const location = useLocation().pathname;
 
     function handleSubmit(evt) {
@@ -16,14 +9,6 @@ function Form({ onSubmit, formId, values, handleChange, errors, isFormValid }) {
 
         onSubmit(values);
     }
-    // const focus = React.useRef();
-
-    // React.useEffect(() => {
-    //     resetForm();
-    //     setTimeout(() => {
-    //         focus.current.focus();
-    //     }, 0);
-    // }, []);
 
     return (
         <form className='form' id={formId} onSubmit={handleSubmit} noValidate>
@@ -35,7 +20,6 @@ function Form({ onSubmit, formId, values, handleChange, errors, isFormValid }) {
             {location === '/signup' && (
                 <>
                     <input
-                        // ref={focus}
                         className='form__input'
                         id='name'
                         type='text'

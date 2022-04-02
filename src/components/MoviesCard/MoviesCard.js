@@ -1,11 +1,11 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { CurrentUserContext } from '../../contexts/CurrentUserContext';
+// import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 
 const baseUrl = 'https://api.nomoreparties.co';
 
 function MoviesCard({ movie, handleSaveMovie, handleDeleteMovie }) {
-    const currentUser = React.useContext(CurrentUserContext);
+    // const currentUser = React.useContext(CurrentUserContext);
     const location = useLocation().pathname;
 
     const durationHours =
@@ -16,9 +16,7 @@ function MoviesCard({ movie, handleSaveMovie, handleDeleteMovie }) {
     const moviesCardLikeButtonClassName = `${
         location === '/saved-movies'
             ? 'movies-card__delete-button'
-            : `movies-card__like ${
-                  movie.saved && currentUser._id === movie.owner ? 'movies-card__like_active' : ''
-              }`
+            : `movies-card__like ${movie.saved ? 'movies-card__like_active' : ''}`
     }`;
 
     const moviesCardImagePath = `${
@@ -26,9 +24,8 @@ function MoviesCard({ movie, handleSaveMovie, handleDeleteMovie }) {
     }`;
 
     function handleClick() {
-        console.log(movie);
         location === '/movies'
-            ? movie.saved === true && currentUser._id === movie.owner
+            ? movie.saved === true
                 ? handleDeleteMovie(movie)
                 : handleSaveMovie(movie)
             : handleDeleteMovie(movie);

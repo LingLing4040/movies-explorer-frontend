@@ -7,8 +7,12 @@ function SearchForm({
     handleSearchSaved,
     updateIsShort,
     isShort,
+    isShortSaved,
+    updateIsShortSaved,
     keyword,
     updateKeyword,
+    keywordSaved,
+    updateKeywordSaved,
 }) {
     const location = useLocation().pathname;
 
@@ -25,16 +29,21 @@ function SearchForm({
     function handleKeyword(e) {
         updateKeyword(e.target.value);
     }
+    function handleKeywordSaved(e) {
+        updateKeywordSaved(e.target.value);
+    }
 
     function handleSubmit(e) {
         e.preventDefault();
-        localStorage.setItem('keyword', keyword);
+        location === '/movies'
+            ? localStorage.setItem('keyword', keyword)
+            : localStorage.setItem('keywordSaved', keywordSaved);
         location === '/movies' ? handleSearch() : handleSearchSaved();
     }
 
     React.useEffect(() => {
         location === '/movies' ? handleSearch() : handleSearchSaved();
-    }, [isShort]);
+    }, [isShort, isShortSaved]);
 
     return (
         <div className='search-form'>
@@ -53,15 +62,20 @@ function SearchForm({
                         required
                         onClick={handleInputClick}
                         onBlur={handleInputLeave}
-                        onChange={handleKeyword}
-                        value={keyword || ''}
+                        onChange={location === '/movies' ? handleKeyword : handleKeywordSaved}
+                        value={location === '/movies' ? keyword : keywordSaved}
                     />
                 </label>
                 <button type='submit' className='search-form__button'>
                     Поиск
                 </button>
             </form>
-            <FilterCheckBox isShort={isShort} updateIsShort={updateIsShort} />
+            <FilterCheckBox
+                isShort={isShort}
+                updateIsShort={updateIsShort}
+                isShortSaved={isShortSaved}
+                updateIsShortSaved={updateIsShortSaved}
+            />
         </div>
     );
 }

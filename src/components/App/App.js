@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import Header from '../Header/Header';
 import Main from '../Main/Main';
 import Footer from '../Footer/Footer';
@@ -21,18 +21,28 @@ function App() {
     const history = useHistory();
 
     const [currentUser, setCurrentUser] = React.useState({});
-    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+    const [isLoggedIn, setIsLoggedIn] = React.useState(null);
     const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
     const [savedMovies, setSavedMovies] = React.useState([]);
     const [initialSavedMovies, setInitialSavedMovies] = React.useState([]);
     const [allMovies, setAllMovies] = React.useState([]);
     const [renderedMovies, setRenderedMovies] = React.useState([]);
     const [keyword, setKeyword] = React.useState('');
+    const [keywordSaved, setKeywordSaved] = React.useState('');
     const [isShort, setIsShort] = React.useState(false);
+    const [isShortSaved, setIsShortSaved] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const [isInfoTooltipOpen, setIsInfoTooltipOpen] = React.useState(false);
     const [isSuccess, setIsSuccess] = React.useState(false);
     const [infoMessage, setInfoMessage] = React.useState('');
+
+    const isFirstRender = useRef(true);
+
+    React.useEffect(() => {
+        setTimeout(() => {
+            setIsLoggedIn(localStorage.getItem('isLoggedIn') !== null);
+        }, 100);
+    }, []);
 
     React.useEffect(() => {
         checkToken();
@@ -60,11 +70,16 @@ function App() {
         if (localStorage.getItem('token')) {
             const token = localStorage.getItem('token');
             if (token) {
-                Auth.getContent().then((res) => {
-                    setCurrentUser(res);
-                    setIsLoggedIn(true);
-                    history.push('/movies');
-                });
+                Auth.getContent()
+                    .then((res) => {
+                        setCurrentUser(res);
+                        setIsLoggedIn(true);
+                        localStorage.setItem('isLoggedIn', 'true');
+                    })
+                    .catch(() => {
+                        setIsLoggedIn(false);
+                        localStorage.setItem('isLoggedIn', 'false');
+                    });
             }
         }
     }
@@ -89,6 +104,7 @@ function App() {
         Auth.login(password, email)
             .then(() => {
                 checkToken();
+                history.push('/movies');
             })
             .catch((err) => {
                 setInfoMessage(err.message);
@@ -116,7 +132,7 @@ function App() {
     function handleLogout() {
         setIsLoggedIn(false);
         localStorage.clear();
-        history.push('/signin');
+        history.push('/');
     }
 
     function handlePopupClick(event) {
@@ -242,10 +258,19 @@ function App() {
         setKeyword(word);
         localStorage.setItem('keyword', word);
     };
+    const updateKeywordSaved = (word) => {
+        setKeywordSaved(word);
+        localStorage.setItem('keywordSaved', word);
+    };
+
     const updateIsShort = (isShort) => {
         setIsShort(isShort);
-
         localStorage.setItem('isShort', JSON.stringify(isShort));
+    };
+
+    const updateIsShortSaved = (isShortSaved) => {
+        setIsShortSaved(isShortSaved);
+        localStorage.setItem('isShortSaved', JSON.stringify(isShortSaved));
     };
 
     React.useEffect(() => {
@@ -254,7 +279,9 @@ function App() {
         updateAllMovies(allMovies);
         updateRenderedMovies(renderedMovies.length ? renderedMovies : allMovies);
         updateKeyword(localStorage.getItem('keyword') || '');
+        updateKeywordSaved(localStorage.getItem('keywordSaved') || '');
         updateIsShort(JSON.parse(localStorage.getItem('isShort') || 'false'));
+        updateIsShortSaved(JSON.parse(localStorage.getItem('isShortSaved') || 'false'));
 
         if (!allMovies.length) {
             moviesApi
@@ -273,10 +300,37 @@ function App() {
         }
     }, []);
 
-    function handleSearch() {
-        getSavedMovies();
-        let sortedMovies;
+    function getFirstSavedMovies() {
+        mainApi
+            .getSavedMovies()
+            .then((movies) => {
+                setSavedMovies(movies.filter((movie) => currentUser._id === movie.owner));
+                setInitialSavedMovies(movies.filter((movie) => currentUser._id === movie.owner));
+                movies
+                    .filter((movie) => currentUser._id === movie.owner)
+                    .forEach((movie) => {
+                        const newSavedMovie = allMovies.find((item) => item.id === movie.movieId);
+                        if (newSavedMovie !== undefined) {
+                            newSavedMovie.saved = true;
+                            setAllMovies(
+                                allMovies.map((item) =>
+                                    item.id === movie.movieId ? newSavedMovie : item
+                                )
+                            );
+                        }
+                    });
+            })
+            .catch(() => {
+                setSavedMovies([]);
+            });
+    }
 
+    function handleSearch() {
+        if (isFirstRender.current === true) {
+            getFirstSavedMovies();
+            isFirstRender.current = false;
+        }
+        let sortedMovies;
         if (keyword.length > 0) {
             sortedMovies = allMovies.filter((movie) =>
                 JSON.stringify(movie.nameRU).toLowerCase().includes(keyword.toLowerCase())
@@ -290,19 +344,20 @@ function App() {
     }
 
     function handleSearchSaved() {
-        getSavedMovies();
+        if (isFirstRender.current === true) {
+            getFirstSavedMovies();
+            isFirstRender.current = false;
+        } else {
+            getSavedMovies();
+        }
         let sortedMovies;
 
-        if (keyword.length > 0) {
-            sortedMovies = initialSavedMovies.filter((movie) =>
-                JSON.stringify(movie.nameRU).toLowerCase().includes(keyword.toLowerCase())
-            );
-            isShort
-                ? setSavedMovies(sortedMovies.filter((movie) => movie.duration <= 40))
-                : setSavedMovies(sortedMovies);
-        } else {
-            setSavedMovies([]);
-        }
+        sortedMovies = initialSavedMovies.filter((movie) =>
+            JSON.stringify(movie.nameRU).toLowerCase().includes(keywordSaved.toLowerCase())
+        );
+        isShortSaved
+            ? setSavedMovies(sortedMovies.filter((movie) => movie.duration <= 40))
+            : setSavedMovies(sortedMovies);
     }
 
     React.useEffect(() => {
@@ -327,6 +382,10 @@ function App() {
             };
         }
     }, [isInfoTooltipOpen]);
+
+    if (isLoggedIn === null) {
+        return <h2>Загрузка...</h2>;
+    }
 
     return (
         <CurrentUserContext.Provider value={currentUser}>
@@ -365,10 +424,10 @@ function App() {
                                 handleSaveMovie={handleSaveMovie}
                                 handleDeleteMovie={handleDeleteSavedMovie}
                                 windowWidth={windowWidth}
-                                isShort={isShort}
-                                updateIsShort={updateIsShort}
-                                keyword={keyword}
-                                updateKeyword={updateKeyword}
+                                isShortSaved={isShortSaved}
+                                updateIsShortSaved={updateIsShortSaved}
+                                keywordSaved={keywordSaved}
+                                updateKeywordSaved={updateKeywordSaved}
                                 isLoading={isLoading}
                             />
                             <Footer />

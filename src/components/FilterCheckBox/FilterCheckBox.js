@@ -1,6 +1,8 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 
-function FilterCheckBox({ isShort, updateIsShort }) {
+function FilterCheckBox({ isShort, updateIsShort, isShortSaved, updateIsShortSaved }) {
+    const location = useLocation().pathname;
     return (
         <div className='filter-checkbox'>
             <label htmlFor='short' className='filter-checkbox__label'>
@@ -9,8 +11,12 @@ function FilterCheckBox({ isShort, updateIsShort }) {
                     id='short'
                     type='checkbox'
                     className='filter-checkbox__input'
-                    onChange={() => updateIsShort(!isShort)}
-                    checked={isShort}
+                    onChange={() =>
+                        location === '/movies'
+                            ? updateIsShort(!isShort)
+                            : updateIsShortSaved(!isShortSaved)
+                    }
+                    checked={location === '/movies' ? isShort : isShortSaved}
                 />
                 <span className='filter-checkbox__span'></span>
             </label>

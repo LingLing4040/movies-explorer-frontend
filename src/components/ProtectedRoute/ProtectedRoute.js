@@ -2,11 +2,15 @@ import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 
 const ProtectedRoute = ({ children, ...props }) => {
-    return (
-        <Route exact={props.exact} path={props.path}>
-            {() => (props.isLoggedIn ? children : <Redirect to='./' />)}
-        </Route>
-    );
+    // if (props.isLoggedIn === null) {
+    //     return <h2>Загрузка...</h2>;
+    // }
+
+    if (props.isLoggedIn !== true) {
+        return <Redirect to='/' />;
+    }
+
+    return <Route>{children}</Route>;
 };
 
 export default ProtectedRoute;

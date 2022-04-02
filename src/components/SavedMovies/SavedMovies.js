@@ -10,10 +10,10 @@ function SavedMovies({
     handleDeleteMovie,
     windowWidth,
     moviesMessage,
-    updateIsShort,
-    isShort,
-    keyword,
-    updateKeyword,
+    updateIsShortSaved,
+    isShortSaved,
+    keywordSaved,
+    updateKeywordSaved,
     isLoading,
     handleSearchSaved,
 }) {
@@ -22,10 +22,10 @@ function SavedMovies({
             <SearchForm
                 handleSearch={handleSearch}
                 handleSearchSaved={handleSearchSaved}
-                updateIsShort={updateIsShort}
-                isShort={isShort}
-                keyword={keyword}
-                updateKeyword={updateKeyword}
+                updateIsShortSaved={updateIsShortSaved}
+                isShortSaved={isShortSaved}
+                keywordSaved={keywordSaved}
+                updateKeywordSaved={updateKeywordSaved}
             />
             {isLoading ? (
                 <Preloader />

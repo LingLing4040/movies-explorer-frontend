@@ -2,10 +2,10 @@ import React from 'react';
 import logoPath from '../../images/header-logo.svg';
 import Form from '../Form/Form';
 import { Link } from 'react-router-dom';
-import * as Auth from '../../utils/Auth.js';
+
 import useFormValidator from '../../hooks/UseFormValidator';
 
-function Register({ handleLogin, handleInfoOpen, setInfoMessage, setIsSuccess }) {
+function Register({ handleRegister, handleInfoOpen, setInfoMessage, setIsSuccess }) {
     const { values, errors, isFormValid, handleChange } = useFormValidator(
         { name: '', email: '', password: '' },
         { name: false, email: false, password: false },
@@ -13,18 +13,8 @@ function Register({ handleLogin, handleInfoOpen, setInfoMessage, setIsSuccess })
         false
     );
 
-    function handleRegister(values) {
-        const { name, password, email } = values;
-
-        Auth.register(name, password, email)
-            .then(() => {
-                handleLogin();
-            })
-            .catch((err) => {
-                setInfoMessage(err.message);
-                handleInfoOpen(false);
-                setIsSuccess(false);
-            });
+    function handleSubmit(values) {
+        handleRegister(values);
     }
 
     return (
@@ -35,7 +25,7 @@ function Register({ handleLogin, handleInfoOpen, setInfoMessage, setIsSuccess })
             <h1 className='register__welcome'>Добро пожаловать!</h1>
             <Form
                 formId='register'
-                onSubmit={handleRegister}
+                onSubmit={handleSubmit}
                 values={values}
                 errors={errors}
                 handleChange={handleChange}

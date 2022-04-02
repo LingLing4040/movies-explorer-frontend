@@ -21,19 +21,14 @@ function App() {
     const history = useHistory();
 
     const [currentUser, setCurrentUser] = React.useState({});
-    const [isLoggedIn, setIsLoggedIn] = React.useState(undefined);
-
+    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
     const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
-
     const [savedMovies, setSavedMovies] = React.useState([]);
-
     const [initialSavedMovies, setInitialSavedMovies] = React.useState([]);
-
     const [allMovies, setAllMovies] = React.useState([]);
     const [renderedMovies, setRenderedMovies] = React.useState([]);
     const [keyword, setKeyword] = React.useState('');
     const [isShort, setIsShort] = React.useState(false);
-
     const [isLoading, setIsLoading] = React.useState(false);
     const [isInfoTooltipOpen, setIsInfoTooltipOpen] = React.useState(false);
     const [isSuccess, setIsSuccess] = React.useState(false);
@@ -47,7 +42,6 @@ function App() {
                     setCurrentUser(user);
                     localStorage.setItem('name', user.name);
                     localStorage.setItem('email', user.email);
-                    console.log(movies);
                     updateSavedMovies(movies.filter((movie) => currentUser._id === movie.owner));
                 })
                 .catch((err) => {
@@ -70,10 +64,37 @@ function App() {
                     setCurrentUser(res);
                     setIsLoggedIn(true);
                     history.push('/movies');
-                    localStorage.setItem('isLogged', true);
                 });
             }
         }
+    }
+
+    function handleRegister(values) {
+        const { name, password, email } = values;
+
+        Auth.register(name, password, email)
+            .then(() => {
+                handleLogin(values);
+            })
+            .catch((err) => {
+                setInfoMessage(err.message);
+                handleInfoOpen(false);
+                setIsSuccess(false);
+            });
+    }
+
+    function handleLogin(values) {
+        const { password, email } = values;
+
+        Auth.login(password, email)
+            .then(() => {
+                checkToken();
+            })
+            .catch((err) => {
+                setInfoMessage(err.message);
+                handleInfoOpen(false);
+                setIsSuccess(false);
+            });
     }
 
     function handleUpdateUser({ name, email }) {
@@ -137,7 +158,6 @@ function App() {
     }
 
     function handleDeleteMovie(movie) {
-        console.log(movie);
         const deletedMovie = initialSavedMovies.find((item) => item.movieId === movie.id);
         mainApi
             .deleteMovie(deletedMovie._id)
@@ -230,8 +250,6 @@ function App() {
 
     React.useEffect(() => {
         const allMovies = JSON.parse(localStorage.getItem('allMovies') || '[]');
-
-        getSavedMovies();
 
         updateAllMovies(allMovies);
         updateRenderedMovies(renderedMovies.length ? renderedMovies : allMovies);
@@ -363,7 +381,7 @@ function App() {
 
                         <Route path='/signup'>
                             <Register
-                                handleLogin={checkToken}
+                                handleRegister={handleRegister}
                                 handleInfoOpen={handleInfoOpen}
                                 setInfoMessage={setInfoMessage}
                                 setIsSuccess={setIsSuccess}
@@ -371,7 +389,7 @@ function App() {
                         </Route>
                         <Route path='/signin'>
                             <Login
-                                handleLogin={checkToken}
+                                handleLogin={handleLogin}
                                 handleInfoOpen={handleInfoOpen}
                                 setInfoMessage={setInfoMessage}
                                 setIsSuccess={setIsSuccess}

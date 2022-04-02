@@ -2,7 +2,6 @@ import React from 'react';
 import logoPath from '../../images/header-logo.svg';
 import Form from '../Form/Form';
 import { Link } from 'react-router-dom';
-import * as Auth from '../../utils/Auth.js';
 import useFormValidator from '../../hooks/UseFormValidator';
 
 function Login({ handleLogin, handleInfoOpen, setInfoMessage, setIsSuccess }) {
@@ -13,19 +12,10 @@ function Login({ handleLogin, handleInfoOpen, setInfoMessage, setIsSuccess }) {
         false
     );
 
-    function handleSignin(values) {
-        const { password, email } = values;
-
-        Auth.login(password, email)
-            .then(() => {
-                handleLogin();
-            })
-            .catch((err) => {
-                setInfoMessage(err.message);
-                handleInfoOpen(false);
-                setIsSuccess(false);
-            });
+    function handleSubmit(values) {
+        handleLogin(values);
     }
+
     return (
         <main className='login'>
             <Link className='login__logo' to='/'>
@@ -34,7 +24,7 @@ function Login({ handleLogin, handleInfoOpen, setInfoMessage, setIsSuccess }) {
             <h1 className='login__welcome'>Рады видеть!</h1>
             <Form
                 formId='login'
-                onSubmit={handleSignin}
+                onSubmit={handleSubmit}
                 values={values}
                 errors={errors}
                 handleChange={handleChange}

@@ -38,11 +38,11 @@ function App() {
 
     const isFirstRender = useRef(true);
 
-    React.useEffect(() => {
-        setTimeout(() => {
-            setIsLoggedIn(localStorage.getItem('isLoggedIn') !== null);
-        }, 100);
-    }, []);
+    // React.useEffect(() => {
+    //     setTimeout(() => {
+    //         setIsLoggedIn(localStorage.getItem('isLoggedIn') !== null);
+    //     }, 100);
+    // }, []);
 
     React.useEffect(() => {
         checkToken();
@@ -74,6 +74,7 @@ function App() {
                     .then((res) => {
                         setCurrentUser(res);
                         setIsLoggedIn(true);
+                        history.push('/movies');
                         localStorage.setItem('isLoggedIn', 'true');
                     })
                     .catch(() => {
@@ -383,9 +384,9 @@ function App() {
         }
     }, [isInfoTooltipOpen]);
 
-    if (isLoggedIn === null) {
-        return <h2>Загрузка...</h2>;
-    }
+    // if (isLoggedIn === null) {
+    //     return <h2>Загрузка...</h2>;
+    // }
 
     return (
         <CurrentUserContext.Provider value={currentUser}>

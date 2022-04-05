@@ -20,21 +20,11 @@ function Footer() {
                     <li className='footer__list-item'>
                         <a
                             className='footer__link'
-                            href='https://github.com/'
+                            href='https://github.com/LingLing4040'
                             target='_blank'
                             rel='noreferrer'
                         >
                             Github
-                        </a>
-                    </li>
-                    <li className='footer__list-item'>
-                        <a
-                            className='footer__link'
-                            href='https://www.facebook.com/'
-                            target='_blank'
-                            rel='noreferrer'
-                        >
-                            Facebook
                         </a>
                     </li>
                 </ul>

@@ -334,7 +334,7 @@ function App() {
         let sortedMovies;
         if (keyword.length > 0) {
             sortedMovies = allMovies.filter((movie) =>
-                JSON.stringify(movie.nameRU).toLowerCase().includes(keyword.toLowerCase())
+                JSON.stringify(movie).toLowerCase().includes(keyword.toLowerCase())
             );
             isShort
                 ? setRenderedMovies(sortedMovies.filter((movie) => movie.duration <= 40))
@@ -354,7 +354,7 @@ function App() {
         let sortedMovies;
 
         sortedMovies = initialSavedMovies.filter((movie) =>
-            JSON.stringify(movie.nameRU).toLowerCase().includes(keywordSaved.toLowerCase())
+            JSON.stringify(movie).toLowerCase().includes(keywordSaved.toLowerCase())
         );
         isShortSaved
             ? setSavedMovies(sortedMovies.filter((movie) => movie.duration <= 40))

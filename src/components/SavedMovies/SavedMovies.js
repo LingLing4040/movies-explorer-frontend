@@ -2,17 +2,44 @@ import React from 'react';
 import SearchForm from '../SearchForm/SearchForm';
 import Preloader from '../Preloader/Preloader';
 import MoviesCardList from '../MoviesCardList/MoviesCardList';
-import { savedMovies } from '../../constants/movies';
 
-function SavedMovies() {
+function SavedMovies({
+    movies,
+    handleSearch,
+    handleSaveMovie,
+    handleDeleteMovie,
+    windowWidth,
+    moviesMessage,
+    updateIsShortSaved,
+    isShortSaved,
+    keywordSaved,
+    updateKeywordSaved,
+    isLoading,
+    handleSearchSaved,
+}) {
     return (
         <main className='movies page__container'>
-            <SearchForm />
-            <Preloader />
-            <MoviesCardList moviesArray={savedMovies} isSaved={true} />
-            {/* <button type='button' className='movies__more'>
-                Ещё
-            </button> */}
+            <SearchForm
+                handleSearch={handleSearch}
+                handleSearchSaved={handleSearchSaved}
+                updateIsShortSaved={updateIsShortSaved}
+                isShortSaved={isShortSaved}
+                keywordSaved={keywordSaved}
+                updateKeywordSaved={updateKeywordSaved}
+            />
+            {isLoading ? (
+                <Preloader />
+            ) : movies.length > 0 ? (
+                <MoviesCardList
+                    moviesArray={movies}
+                    handleSaveMovie={handleSaveMovie}
+                    handleDeleteMovie={handleDeleteMovie}
+                    windowWidth={windowWidth}
+                    moviesMessage={moviesMessage}
+                />
+            ) : (
+                <p className='movies__not-found'>Ничего не найдено</p>
+            )}
         </main>
     );
 }

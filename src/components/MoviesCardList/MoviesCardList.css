@@ -4,7 +4,12 @@
     margin: 80px auto 0;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    /* grid-template-columns: repeat(auto-fit, 360px); */
     gap: 37px 24px;
+}
+
+.movies-card-list__container {
+    margin: 0 auto;
 }
 
 @media screen and (max-width: 1279px) {

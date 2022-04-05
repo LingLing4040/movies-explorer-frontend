@@ -1,29 +1,37 @@
+import React from 'react';
 import { useLocation } from 'react-router-dom';
 
-function Form(props) {
+function Form({ onSubmit, formId, values, handleChange, errors, isFormValid }) {
     const location = useLocation().pathname;
 
+    function handleSubmit(evt) {
+        evt.preventDefault();
+
+        onSubmit(values);
+    }
+
     return (
-        <form className='form' id={'register'}>
+        <form className='form' id={formId} onSubmit={handleSubmit} noValidate>
             {location === '/signup' && (
                 <label className='form__label' htmlFor='username'>
                     Имя
                 </label>
             )}
             {location === '/signup' && (
-                <input
-                    className='form__input'
-                    id='username'
-                    type='text'
-                    name='username'
-                    placeholder='Имя профиля'
-                    required
-                    minLength='2'
-                    maxLength='40'
-                    value={props.User.name || ''}
-                ></input>
+                <>
+                    <input
+                        className='form__input'
+                        id='name'
+                        type='text'
+                        name='name'
+                        placeholder='Имя профиля'
+                        required
+                        value={values.name}
+                        onChange={handleChange}
+                    ></input>
+                    <span className='form__input-error'>{errors.name}</span>
+                </>
             )}
-            {/* <span className='form__input-error'>Что-то пошло не так...</span> */}
             <label className='form__label' htmlFor='email'>
                 E-mail
             </label>
@@ -34,39 +42,33 @@ function Form(props) {
                 name='email'
                 placeholder='E-mail'
                 required
-                minLength='2'
-                maxLength='40'
-                value={props.User.email || ''}
+                value={values.email}
+                onChange={handleChange}
             ></input>
-            {/* <span className='form__input-error'>Что-то пошло не так...</span> */}
+            <span className='form__input-error'>{errors.email}</span>
             <label className='form__label' htmlFor='password'>
                 Пароль
             </label>
             <input
-                className='form__input form__input_red'
+                className='form__input '
                 id='password'
                 type='password'
                 name='password'
                 placeholder='Пароль'
                 required
-                minLength='2'
-                maxLength='40'
-                value={props.User.password || ''}
+                value={values.password}
+                onChange={handleChange}
             ></input>
-            <span
-                className={`form__input-error ${
-                    props.formId === 'register' ? '' : 'form__input-error_hidden'
-                }`}
-            >
-                Что-то пошло не так...
-            </span>
+
+            <span className='form__input-error '>{errors.password}</span>
             <button
+                disabled={!isFormValid}
                 type='submit'
                 className={`form__submit-button ${
-                    props.formId === 'register' ? '' : 'form__submit-button_login'
-                }`}
+                    formId === 'register' ? '' : 'form__submit-button_login'
+                } ${isFormValid ? '' : 'form__submit-button_inactive'}`}
             >
-                {props.formId === 'register' ? 'Зарегистрироваться' : 'Войти'}
+                {formId === 'register' ? 'Зарегистрироваться' : 'Войти'}
             </button>
         </form>
     );

@@ -52,6 +52,14 @@
     text-align: right;
 }
 
+.profile__input-error {
+    margin: 6px 0 0 0;
+    color: #ee3465;
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: 400;
+}
+
 .profile__submit-edit {
     margin: 220px auto 0;
     font-size: 13px;
@@ -67,6 +75,11 @@
 .profile__submit-edit:hover {
     cursor: pointer;
     opacity: 0.5;
+}
+
+.profile__submit-edit_inactive:hover {
+    cursor: auto;
+    opacity: 1;
 }
 
 .profile__logout {

@@ -31,7 +31,7 @@ function Portfolio() {
                     <p className='portfolio__project-name'>Одностраничное приложение</p>
                     <a
                         className='portfolio__link'
-                        href='https://cool.domainname.students.nomoredomains.xyz/'
+                        href='https://filatov-movies.nomoredomains.work/'
                         target='_blank'
                         rel='noreferrer'
                     >
